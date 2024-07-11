@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.extern.java.Log;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -19,5 +20,5 @@ public class Todo {
     private Long userId;
     private boolean done;
     private Priority priority;
-    private LocalDateTime createdAt;
+    private Date createdAt;
 }

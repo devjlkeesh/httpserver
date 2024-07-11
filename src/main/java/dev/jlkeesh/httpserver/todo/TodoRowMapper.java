@@ -14,7 +14,7 @@ public class TodoRowMapper {
                 resultSet.getLong("user_id"),
                 resultSet.getBoolean("done"),
                 Priority.valueOf(resultSet.getString("priority")),
-                resultSet.getTimestamp("created_at").toLocalDateTime()
+                resultSet.getDate("created_at")
         );
     }
 

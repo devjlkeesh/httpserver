@@ -1,38 +1,20 @@
 package dev.jlkeesh.httpserver;
 
-import dev.jlkeesh.httpserver.todo.Priority;
-import dev.jlkeesh.httpserver.todo.Todo;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import dev.jlkeesh.httpserver.todo.TodoController;
 
 import java.io.IOException;
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ResourceBundle;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 public class Application {
     public static void main(String[] args) throws IOException {
-        ResourceBundle settings = ResourceBundle.getBundle("application");
-        String insertTodoQuery = settings.getString("query.todo.insert");
-        String selectTodoQuery = settings.getString("query.todo.select");
-        String url = settings.getString("datasource.url");
-        String username = settings.getString("datasource.username");
-        String password = settings.getString("datasource.password");
-        try {
-            Connection connection = DriverManager.getConnection(url, username, password);
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select version();");
-            if (resultSet.next()){
-                String string = resultSet.getString(1);
-                System.out.println("string = " + string);
-            }
-
-
-            ResultSet selectResultSet = statement.executeQuery(selectTodoQuery);
-            if (selectResultSet.next()){
-
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        HttpServer server = HttpServer.create(new InetSocketAddress(5433),0);
+        server.createContext("/todo",new TodoController()) ;
+        server.setExecutor(Executors.newFixedThreadPool(10));
+        server.start();
     }
 }
