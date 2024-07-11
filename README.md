@@ -15,27 +15,12 @@ This project is a simple HTTP server for managing todo items, built using Java's
 
 - Java Development Kit (JDK) 8 or higher
 
-### Installation
+````java
 
-1. Clone the Repository
-   ```sh
-   git clone https://github.com/your-username/todo-http-server.git
-   cd todo-http-server
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
-```csharp
-todo-http-server/
-│
-├── src/
-│   └── dev/
-│       └── jlkeesh
-│           └── todo/
-│
-│               ├── Todo.java
-│               ├── TodoHandler.java
-│               ├── TodoHttpServer.java
-│               └── TodoStore.java
-├── out/
-├── README.md
-└── LICENSE
-```
+
+
+````
