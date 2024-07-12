@@ -35,4 +35,8 @@ public class TodoService {
     public List<Todo> getAll() {
         return todoDAO.findAll();
     }
+
+    public void deleteById(Long id) {
+        todoDAO.deleteById(id);
+    }
 }

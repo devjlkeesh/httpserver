@@ -2,8 +2,11 @@ package dev.jlkeesh.httpserver.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.jlkeesh.httpserver.todo.dto.TodoCreateDto;
 import lombok.Getter;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public final class GsonUtil {
@@ -26,5 +29,9 @@ public final class GsonUtil {
 
     public static byte[] objectToByteArray(Object obj) {
         return objectToJson(obj).getBytes(StandardCharsets.UTF_8    );
+    }
+
+    public static <T> T fromJson(InputStream is, Class<T> clazz) {
+        return gson.fromJson(new InputStreamReader(is, StandardCharsets.UTF_8), clazz);
     }
 }

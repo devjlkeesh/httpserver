@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 @Log
@@ -27,9 +26,7 @@ public class TodoController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        URI requestURI = httpExchange.getRequestURI();
-        String requestMethod = httpExchange.getRequestMethod();
-        switch (requestMethod) {
+        switch (httpExchange.getRequestMethod()) {
             case "GET":
                 processGetRequest(httpExchange);
             case "POST":
@@ -39,8 +36,15 @@ public class TodoController implements HttpHandler {
         }
     }
 
-    private void processDeleteRequest(HttpExchange httpExchange) {
-
+    private void processDeleteRequest(HttpExchange httpExchange) throws IOException {
+        OutputStream os = httpExchange.getResponseBody();
+        String uri = getPath(httpExchange);
+        Long id = getPathVariable(uri);
+        todoService.deleteById(id);
+        httpExchange.sendResponseHeaders(200, 0);
+        httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+        os.write("todo successfully deleted".getBytes(StandardCharsets.UTF_8));
+        os.close();
     }
 
     private void processPostRequest(HttpExchange httpExchange) throws IOException {
@@ -48,26 +52,33 @@ public class TodoController implements HttpHandler {
         httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
         OutputStream os = httpExchange.getResponseBody();
         InputStream is = httpExchange.getRequestBody();
-        TodoCreateDto dto = gson.fromJson(new InputStreamReader(is, StandardCharsets.UTF_8), TodoCreateDto.class);
+        TodoCreateDto dto = GsonUtil.fromJson(is, TodoCreateDto.class);
         todoService.create(dto);
         os.write("todo successfully added".getBytes());
         os.close();
     }
 
     private void processGetRequest(HttpExchange httpExchange) throws IOException {
-        String uri = httpExchange.getRequestURI().getPath();
+        String uri = getPath(httpExchange);
         OutputStream os = httpExchange.getResponseBody();
+        httpExchange.sendResponseHeaders(200, 0);
+        httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+        Object responseData;
         if (uri.equals("/todo")) {
-            httpExchange.sendResponseHeaders(200, 0);
-            httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
-            os.write(GsonUtil.objectToByteArray(todoService.getAll()));
+            responseData = todoService.getAll();
         } else {
-            Long id = Long.parseLong(uri.split("/")[2]);
-            Todo todo = todoService.getById(id);
-            httpExchange.sendResponseHeaders(200, 0);
-            httpExchange.getResponseHeaders().add("Content-Type", "application/json");
-            os.write(GsonUtil.objectToByteArray(todo));
+            Long id = getPathVariable(uri);
+            responseData = todoService.getById(id);
         }
+        os.write(GsonUtil.objectToByteArray(responseData));
         os.close();
+    }
+
+    private static String getPath(HttpExchange httpExchange) {
+        return httpExchange.getRequestURI().getPath();
+    }
+
+    private static long getPathVariable(String uri) {
+        return Long.parseLong(uri.split("/")[2]);
     }
 }
