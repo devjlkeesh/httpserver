@@ -5,7 +5,6 @@ import dev.jlkeesh.httpserver.config.SettingsConfig;
 import dev.jlkeesh.httpserver.exception.DataAccessException;
 
 import java.sql.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,17 +37,40 @@ public class TodoDAO {
 
     public Todo save(Todo todo) {
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setString(1, todo.getTitle());
-            preparedStatement.setString(2, todo.getDescription());
-            preparedStatement.setLong(3, todo.getUserId());
-            preparedStatement.setBoolean(4, todo.isDone());
-            preparedStatement.setString(5, todo.getPriority().name());
-            preparedStatement.execute();
-            return todo;
+            if (todo.getId() == null) {
+                return insert(todo);
+            } else {
+                return update(todo);
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e);
         }
+    }
+
+    private Todo update(Todo todo) throws SQLException {
+        PreparedStatement psmt = connection.prepareStatement(updateQuery);
+        psmt.setString(1, todo.getTitle());
+        psmt.setString(2, todo.getDescription());
+        psmt.setBoolean(3, todo.isDone());
+        psmt.setString(4, todo.getPriority().name());
+        psmt.setLong(5, todo.getId());
+        psmt.execute();
+        return todo;
+    }
+
+    private Todo insert(Todo todo) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+        preparedStatement.setString(1, todo.getTitle());
+        preparedStatement.setString(2, todo.getDescription());
+        preparedStatement.setLong(3, todo.getUserId());
+        preparedStatement.setBoolean(4, todo.isDone());
+        preparedStatement.setString(5, todo.getPriority().name());
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            todo.setId(rs.getLong("id"));
+            todo.setCreatedAt(rs.getDate("created_at"));
+        }
+        return todo;
     }
 
     public void deleteById(Long id) {

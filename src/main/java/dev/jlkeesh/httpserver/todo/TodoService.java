@@ -4,6 +4,7 @@ import dev.jlkeesh.httpserver.todo.dto.TodoCreateDto;
 import dev.jlkeesh.httpserver.todo.dto.TodoUpdateDto;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TodoService {
     private final TodoDAO todoDAO;
@@ -21,10 +22,22 @@ public class TodoService {
         return todoDAO.save(todo);
     }
 
-    public void update(TodoUpdateDto dto) {
+    public Todo update(TodoUpdateDto dto) {
         Todo todo = todoDAO.findById(dto.id())
                 .orElseThrow(() -> new IllegalStateException("todo not found:" + dto.id()));
-        // update logic;
+        if (Objects.nonNull(dto.title())) {
+            todo.setTitle(dto.title());
+        }
+        if (Objects.nonNull(dto.description())) {
+            todo.setDescription(dto.description());
+        }
+        if (Objects.nonNull(dto.priority())) {
+            todo.setPriority(dto.priority());
+        }
+        if (Objects.nonNull(dto.completed())) {
+            todo.setDone(dto.completed());
+        }
+        return todoDAO.save(todo);
     }
 
     public Todo getById(Long id) {

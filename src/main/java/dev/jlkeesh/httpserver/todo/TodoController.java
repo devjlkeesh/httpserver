@@ -3,15 +3,18 @@ package dev.jlkeesh.httpserver.todo;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dev.jlkeesh.httpserver.todo.dto.BaseResponse;
 import dev.jlkeesh.httpserver.todo.dto.TodoCreateDto;
+import dev.jlkeesh.httpserver.todo.dto.TodoUpdateDto;
 import dev.jlkeesh.httpserver.utils.GsonUtil;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @Log
 public class TodoController implements HttpHandler {
@@ -33,7 +36,23 @@ public class TodoController implements HttpHandler {
                 processPostRequest(httpExchange);
             case "DELETE":
                 processDeleteRequest(httpExchange);
+            case "PUT":
+                processPutRequest(httpExchange);
+            default:
+                processUnhandledRequest(httpExchange);
         }
+    }
+
+    private void processPutRequest(HttpExchange httpExchange) throws IOException {
+        httpExchange.sendResponseHeaders(200, 0);
+        httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+        OutputStream os = httpExchange.getResponseBody();
+        InputStream is = httpExchange.getRequestBody();
+        TodoUpdateDto dto = GsonUtil.fromJson(is, TodoUpdateDto.class);
+        Todo todo = todoService.update(dto);
+        BaseResponse<Todo> baseResponse = new BaseResponse<>(todo);
+        os.write(GsonUtil.objectToByteArray(baseResponse));
+        os.close();
     }
 
     private void processDeleteRequest(HttpExchange httpExchange) throws IOException {
@@ -43,7 +62,8 @@ public class TodoController implements HttpHandler {
         todoService.deleteById(id);
         httpExchange.sendResponseHeaders(200, 0);
         httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
-        os.write("todo successfully deleted".getBytes(StandardCharsets.UTF_8));
+        BaseResponse<String> baseResponse = new BaseResponse<>("todo successfully deleted");
+        os.write(GsonUtil.objectToByteArray(baseResponse));
         os.close();
     }
 
@@ -53,8 +73,9 @@ public class TodoController implements HttpHandler {
         OutputStream os = httpExchange.getResponseBody();
         InputStream is = httpExchange.getRequestBody();
         TodoCreateDto dto = GsonUtil.fromJson(is, TodoCreateDto.class);
-        todoService.create(dto);
-        os.write("todo successfully added".getBytes());
+        Todo todo = todoService.create(dto);
+        BaseResponse<Todo> baseResponse = new BaseResponse<>(todo);
+        os.write(GsonUtil.objectToByteArray(baseResponse));
         os.close();
     }
 
@@ -70,7 +91,17 @@ public class TodoController implements HttpHandler {
             Long id = getPathVariable(uri);
             responseData = todoService.getById(id);
         }
-        os.write(GsonUtil.objectToByteArray(responseData));
+        BaseResponse<Object> baseResponse = new BaseResponse<>(responseData);
+        os.write(GsonUtil.objectToByteArray(baseResponse));
+        os.close();
+    }
+
+    private void processUnhandledRequest(HttpExchange httpExchange) throws IOException {
+        OutputStream os = httpExchange.getResponseBody();
+        httpExchange.sendResponseHeaders(404, 0);
+        httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+        BaseResponse<Void> baseResponse = new BaseResponse<>("not found");
+        os.write(GsonUtil.objectToByteArray(baseResponse));
         os.close();
     }
 

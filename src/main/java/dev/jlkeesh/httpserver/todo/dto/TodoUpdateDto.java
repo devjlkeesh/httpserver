@@ -1,4 +1,6 @@
 package dev.jlkeesh.httpserver.todo.dto;
 
-public record TodoUpdateDto(Long id, String title, String description, Boolean completed) {
+import dev.jlkeesh.httpserver.todo.Priority;
+
+public record TodoUpdateDto(Long id, String title, String description, Priority priority, Boolean completed) {
 }
