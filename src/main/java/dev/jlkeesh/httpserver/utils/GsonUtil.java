@@ -28,10 +28,10 @@ public final class GsonUtil {
     }
 
     public static byte[] objectToByteArray(Object obj) {
-        return objectToJson(obj).getBytes(StandardCharsets.UTF_8    );
+        return objectToJson(obj).getBytes(StandardCharsets.UTF_8);
     }
 
     public static <T> T fromJson(InputStream is, Class<T> clazz) {
-        return gson.fromJson(new InputStreamReader(is, StandardCharsets.UTF_8), clazz);
+        return gson.fromJson(new InputStreamReader(is), clazz);
     }
 }

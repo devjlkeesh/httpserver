@@ -1,5 +1,6 @@
 package dev.jlkeesh.httpserver.todo;
 
+import dev.jlkeesh.httpserver.exception.NotFoundException;
 import dev.jlkeesh.httpserver.todo.dto.TodoCreateDto;
 import dev.jlkeesh.httpserver.todo.dto.TodoUpdateDto;
 
@@ -24,7 +25,7 @@ public class TodoService {
 
     public Todo update(TodoUpdateDto dto) {
         Todo todo = todoDAO.findById(dto.id())
-                .orElseThrow(() -> new IllegalStateException("todo not found:" + dto.id()));
+                .orElseThrow(() -> new NotFoundException("todo not found: " + dto.id()));
         if (Objects.nonNull(dto.title())) {
             todo.setTitle(dto.title());
         }
@@ -42,7 +43,7 @@ public class TodoService {
 
     public Todo getById(Long id) {
         return todoDAO.findById(id)
-                .orElseThrow(() -> new IllegalStateException("todo not found:" + id));
+                .orElseThrow(() -> new NotFoundException("todo not found: " + id));
     }
 
     public List<Todo> getAll() {
