@@ -31,16 +31,11 @@ public class TodoController implements HttpHandler {
         log.info("Request received. uri : , " + httpExchange.getRequestURI() + ". Method: " + httpExchange.getRequestMethod());
         try {
             switch (httpExchange.getRequestMethod()) {
-                case "GET":
-                    processGetRequest(httpExchange);
-                case "POST":
-                    processPostRequest(httpExchange);
-                case "DELETE":
-                    processDeleteRequest(httpExchange);
-                case "PUT":
-                    processPutRequest(httpExchange);
-                default:
-                    processUnhandledRequest(httpExchange);
+                case "GET" -> processGetRequest(httpExchange);
+                case "POST" -> processPostRequest(httpExchange);
+                case "DELETE" -> processDeleteRequest(httpExchange);
+                case "PUT" -> processPutRequest(httpExchange);
+                default -> processUnhandledRequest(httpExchange);
             }
         } catch (NotFoundException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
