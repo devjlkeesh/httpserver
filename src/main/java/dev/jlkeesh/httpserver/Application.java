@@ -3,7 +3,6 @@ package dev.jlkeesh.httpserver;
 import com.sun.net.httpserver.HttpServer;
 import dev.jlkeesh.httpserver.config.SettingsConfig;
 import dev.jlkeesh.httpserver.todo.TodoController;
-import lombok.extern.java.Log;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
