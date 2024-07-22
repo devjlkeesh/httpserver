@@ -3,6 +3,7 @@ package dev.jlkeesh.httpserver;
 import com.sun.net.httpserver.HttpServer;
 import dev.jlkeesh.httpserver.config.SettingsConfig;
 import dev.jlkeesh.httpserver.todo.TodoController;
+import dev.jlkeesh.httpserver.todo.TodoCreateController;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,6 +17,7 @@ public class Application {
         int concurrentRequest = Integer.parseInt(SettingsConfig.get("concurrent.request"));
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/todo", new TodoController());
+        server.createContext("/todo/add", new TodoCreateController());
         server.setExecutor(Executors.newFixedThreadPool(concurrentRequest));
         server.start();
         logger.info("server started on port : " + port);

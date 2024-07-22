@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo Add</title>
+</head>
+<body>
+<h1>Todo add</h1>
+<form>
+    <div>
+        <label>Title</label> <br/>
+        <input type="text" name="title">
+    </div>
+    <div>
+        <label>Description</label> <br/>
+        <textarea name="description" cols="30" rows="10"></textarea>
+    </div>
+    <div>
+        <label>User Id</label> <br/>
+        <input type="number" name="userId" min="1">
+    </div>
+    <div>
+        <label>Priority</label> <br/>
+        <select name="priority">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+        </select>
+    </div>
+
+</form>
+<input type="submit" value="save todo">
+</body>
+</html>
