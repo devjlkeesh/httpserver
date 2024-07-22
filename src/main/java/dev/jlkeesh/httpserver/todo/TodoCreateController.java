@@ -7,6 +7,7 @@ import dev.jlkeesh.httpserver.todo.dto.TodoCreateDto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,12 +39,9 @@ public class TodoCreateController implements HttpHandler {
                 Long.valueOf(formData.get("userId")),
                 Priority.valueOf(formData.get("priority"))
         );
-        todoService.create(dto);
-        httpExchange.sendResponseHeaders(200, 0);
-        OutputStream os = httpExchange.getResponseBody();
-        httpExchange.getResponseHeaders().add(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
-        os.write("<div>success <a href=\"/todo\">Home Page</a></div>".getBytes(StandardCharsets.UTF_8));
-        os.close();
+        todoService.create(dto); // Redirect to /thankyou
+        httpExchange.getResponseHeaders().set("Location", "/todo");
+        httpExchange.sendResponseHeaders(302, -1); // 302 Found
     }
 
     private Map<String, String> parseFormData(String formDataAsString) {
@@ -51,7 +49,9 @@ public class TodoCreateController implements HttpHandler {
 
         for (String keyValue : formDataAsString.split("&")) {
             String[] keyValueArray = keyValue.split("=");
-            formData.put(keyValueArray[0], keyValueArray[1]);
+            String key = URLDecoder.decode(keyValueArray[0], StandardCharsets.UTF_8);
+            String value = URLDecoder.decode(keyValueArray[1], StandardCharsets.UTF_8);
+            formData.put(key, value);
         }
         return formData;
     }
