@@ -22,10 +22,9 @@ public class TodoController implements HttpHandler {
     private static final String CONTENT_TYPE_KEY = "Content-Type";
     private static final String CONTENT_TYPE_VALUE = "text/html";
     private final TodoService todoService;
-    private final Gson gson = GsonUtil.getGson();
 
-    public TodoController() {
-        this.todoService = new TodoService();
+    public TodoController(TodoService todoService) {
+        this.todoService = todoService;
     }
 
     @Override

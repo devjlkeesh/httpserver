@@ -17,8 +17,8 @@ public class TodoCreateController implements HttpHandler {
     private static final String CONTENT_TYPE_VALUE = "text/html";
     private final TodoService todoService;
 
-    public TodoCreateController() {
-        this.todoService = new TodoService();
+    public TodoCreateController(TodoService todoService) {
+        this.todoService = todoService;
     }
 
     @Override

@@ -10,8 +10,8 @@ import java.util.Objects;
 public class TodoService {
     private final TodoDAO todoDAO;
 
-    public TodoService() {
-        this.todoDAO = new TodoDAO();
+    public TodoService(TodoDAO todoDAO) {
+        this.todoDAO = todoDAO;
     }
 
     public Todo create(TodoCreateDto dto) {
